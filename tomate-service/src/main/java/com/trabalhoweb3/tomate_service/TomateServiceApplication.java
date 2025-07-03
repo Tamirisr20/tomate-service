@@ -1,0 +1,13 @@
+package com.trabalhoweb3.tomate_service;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class TomateServiceApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(TomateServiceApplication.class, args);
+	}
+
+}
