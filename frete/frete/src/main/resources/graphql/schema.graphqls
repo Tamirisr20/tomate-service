@@ -1,0 +1,12 @@
+type Query {
+    calcularFrete(quantidadeCaixas: Int!, distanciaKm: Float!): CustoFrete
+}
+
+type CustoFrete {
+    veiculoUtilizado: String!
+    distanciaKm: Float!
+    custoPorKm: Float!
+    custoTotalKm: Float!
+    taxaFixa: Float!
+    custoFinalFrete: Float!
+}
