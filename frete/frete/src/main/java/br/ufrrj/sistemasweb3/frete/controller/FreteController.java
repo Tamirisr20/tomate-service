@@ -47,8 +47,8 @@ public class FreteController {
         return new CustoFrete(
                 veiculoUtilizado,
                 distanciaKm,
-                precoPorKm,           // <-- Ajustado aqui
-                custoTotalDistancia,  // <-- Ajustado aqui
+                precoPorKm,           //  tive que arrumar o nome pq estava diferente do model
+                custoTotalDistancia,  // tive que arrumar o nome pq estava diferente do model
                 taxaFixa,
                 custoFinalFrete
         );
