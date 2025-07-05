@@ -1,0 +1,21 @@
+# Define a query que o seu controller oferece
+type Query {
+    calcularVenda(quantidadeCaixas: Int!, distanciaKm: Float!): VendaResponse
+}
+
+# Descreve a estrutura da sua classe VendaResponse.java
+type VendaResponse {
+    valorFinal: Float
+    detalhes: DetalhesCalculo
+}
+
+# Descreve a estrutura da sua classe DetalhesCalculo.java
+type DetalhesCalculo {
+    precoTomate: Float
+    custoFrete: Float
+    subtotal: Float
+    lucro: Float
+    desconto: Float
+    valorComLucroEDesconto: Float
+    impostos: Float
+}
