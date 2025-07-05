@@ -1,2 +1,173 @@
+Sistema de Venda e Entrega de Tomates
+Este projeto implementa um sistema de microserviços para simular a venda e entrega de caixas de tomate. A arquitetura é composta por três serviços independentes que se comunicam para formar um resultado final, demonstrando a integração entre APIs REST e GraphQL.
 
-Este projeto tem como objetivo desenvolver dois serviços web simples — um utilizando REST e outro com GraphQL — e integrá-los por meio de um mashup, simulando um ambiente de comunicação entre APIs. O foco principal está na aplicação de boas práticas de desenvolvimento web, com ênfase em organização modular, padronização de rotas e integração entre serviços.
+Este projeto foi desenvolvido como parte da avaliação da disciplina de Sistemas Web 3 do curso de Sistemas de Informação da UFRRJ.
+
+Estrutura dos Projetos
+O sistema é dividido em três serviços, cada um em sua própria pasta e com suas próprias responsabilidades:
+
+/tomate-service: Um serviço REST que calcula o preço das caixas de tomate com base na quantidade e em uma tabela de descontos.
+
+/frete: Um serviço GraphQL que calcula o custo do frete com base na distância e na quantidade de caixas, determinando automaticamente o veículo necessário.
+
+/mashup: Um serviço GraphQL que atua como integrador (mashup). Ele consome os outros dois serviços, aplica regras de negócio adicionais (lucro, descontos por volume, impostos) e retorna o preço final da venda para o cliente.
+
+Tecnologias Utilizadas
+Java (JDK 21+)
+
+Spring Boot
+
+Spring Web (para REST e Cliente)
+
+Spring for GraphQL
+
+Spring WebFlux (para o WebClient no mashup)
+
+Maven (Gerenciador de Dependências)
+
+Swagger (Documentação da API REST)
+
+GraphiQL (Interface de Testes da API GraphQL)
+
+Como Executar o Sistema Completo
+Para que o mashup funcione corretamente, os três serviços precisam estar rodando simultaneamente, cada um em uma porta diferente.
+
+1. Configuração das Portas
+Antes de iniciar, verifique se os arquivos application.properties de cada serviço estão configurados com as portas corretas para evitar conflitos.
+
+Serviço de Frete (/frete/src/main/resources/application.properties):
+
+Properties
+
+server.port=8080
+spring.graphql.graphiql.enabled=true
+Serviço de Preço (/tomate-service/src/main/resources/application.properties):
+
+Properties
+
+server.port=8081
+springdoc.swagger-ui.path=/swagger-ui.html
+Serviço de Mashup (/mashup/src/main/resources/application.properties):
+
+Properties
+
+server.port=8082
+spring.graphql.graphiql.enabled=true
+
+# URLs para os outros serviços (verifique se as portas batem)
+service.frete.url=http://localhost:8080/graphql
+service.preco.url=http://localhost:8081/api/tomate/calcular
+2. Iniciando cada Serviço
+Abra um terminal separado para cada serviço.
+
+Para iniciar o Serviço de Frete:
+
+Bash
+
+cd frete
+./mvnw.cmd spring-boot:run
+Para iniciar o Serviço de Preço:
+
+Bash
+
+cd tomate-service
+./mvnw.cmd spring-boot:run
+Para iniciar o Serviço de Mashup:
+
+Bash
+
+cd mashup
+./mvnw.cmd spring-boot:run
+Após executar os três comandos, todos os serviços estarão no ar e prontos para serem testados.
+
+Detalhes e Testes dos Serviços
+Serviço 1: Preço do Tomate (REST)
+Descrição: API REST que calcula o preço de caixas de tomate com descontos.
+
+Interface de Testes (Swagger): http://localhost:8081/swagger-ui.html
+
+Exemplo de Requisição (via POST /api/tomate/calcular):
+
+Corpo da Requisição (JSON):
+
+JSON
+
+{
+  "quantidade": 25
+}
+Resposta Esperada (JSON):
+
+JSON
+
+{
+  "quantidade": 25,
+  "precoBase": 50.0,
+  "totalSemDesconto": 1250.0,
+  "percentualDesconto": 11.0,
+  "valorDesconto": 137.5,
+  "totalComDesconto": 1112.5
+}
+Serviço 2: Cálculo de Frete (GraphQL)
+Descrição: API GraphQL que calcula o valor do frete.
+
+Interface de Testes (GraphiQL): http://localhost:8080/graphiql
+
+Exemplo de Requisição (Query):
+
+GraphQL
+
+query TesteFrete {
+  calcularFrete(quantidadeCaixas: 300, distanciaKm: 120) {
+    veiculoUtilizado
+    custoFinalFrete
+  }
+}
+Resposta Esperada (JSON):
+
+JSON
+
+{
+  "data": {
+    "calcularFrete": {
+      "veiculoUtilizado": "Carreta",
+      "custoFinalFrete": 4960.0
+    }
+  }
+}
+Serviço 3: Mashup de Venda (GraphQL)
+Descrição: API GraphQL que integra os serviços de preço e frete e aplica regras de negócio para calcular o preço final da venda.
+
+Interface de Testes (GraphiQL): http://localhost:8082/graphiql
+
+Exemplo de Requisição (Query):
+
+GraphQL
+
+query TesteVendaCompleta {
+  calcularVenda(quantidadeCaixas: 60, distanciaKm: 150) {
+    custoTomate
+    custoFrete
+    subtotal
+    lucro
+    descontoPorVolume
+    impostos
+    valorFinalVenda
+  }
+}
+Resposta Esperada (JSON):
+
+JSON
+
+{
+  "data": {
+    "calcularVenda": {
+      "custoTomate": 2670.0,
+      "custoFrete": 4960.0,
+      "subtotal": 7630.0,
+      "lucro": 4196.5,
+      "descontoPorVolume": 887.0,
+      "impostos": 3224.98,
+      "valorFinalVenda": 15164.48
+    }
+  }
+}
