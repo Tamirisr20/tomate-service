@@ -1,0 +1,12 @@
+type Query {
+  calcularVenda(quantidadeCaixas: Int!, distanciaKm: Float!): Venda
+}
+
+type Venda {
+  precoTomate: Float!
+  custoFrete: Float!
+  lucro: Float!
+  desconto: Float!
+  impostos: Float!
+  valorFinal: Float!
+}
